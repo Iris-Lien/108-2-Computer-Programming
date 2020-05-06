@@ -4,18 +4,16 @@ using namespace std;
 
 int main()
 {
-    int cases;
-    int player;
-    float p,ans;
-    int win_player;
-    int round=100;
-    cin>>cases;
-    for(int i=0;i<cases;i++)
+    int t, n, i;
+    double p;
+    scanf("%d", &t);
+    while(t--)
     {
-        cin>>player>>p>>win_player;
-        float q = 1 - p;
-        ans = (pow(q,win_player-1)*p)*(1-pow(pow(q,player),round))/(1-pow(q,player));
-        cout<<ans;
+        scanf("%d %lf %d", &n, &p, &i);
+        if(p == 0)
+            puts("0.0000");
+        else
+            printf("%.4lf\n", p*pow(1-p, i-1)/(1-pow(1-p, n)));
     }
 
     return 0;
