@@ -6,30 +6,49 @@ using namespace std;
 
 int main()
 {
+    int x;
+    int arr[500000];
     char input[3000], *temp;
-    int j, x, index, ex = 1;
-    int a[3000];
     while(cin>>x)
     {
-        ex = 1;
+        long long int ans = 0;
+
         cin.getline(input, 3000);
         cin.getline(input, 3000);
-        index = 0;
         temp = strtok(input, " ");
-        while(temp != NULL)
+
+        int i=0;
+        int counter = 0;    //­pºâ¦¸¤è
+        while(temp!=NULL)
         {
-            //cout<<temp;
-            a[index] = atoi(temp);
-            index ++;
+            //cout<<temp<<endl;
+            arr[i] = atoi(temp);
             temp = strtok(NULL, " ");
+            i++;
+            counter++;
         }
-        int ans = 0;
-        for(j = 0; j < index - 2; j ++)
-            ex = ex * x;
-        for(j = 0; j < index; j ++, ex /= x)
+        //cout<<i<<endl;
+
+        counter -= 2;
+        for(int j=0; j<i; j++)
         {
-            ans += a[j] * (index - 1 - j) * ex;
+            if(counter>=0)
+            {
+                //cout<<"counter"<<counter<<endl;
+                long long buf = arr[j];
+                buf *= (counter + 1);
+                //cout<<buf<<endl;
+                ans += buf*pow((double)x,(double)counter);
+                //cout<<"j:"<<j<<" "<<arr[j]<<endl;
+                //cout<<"ans:"<<ans<<endl;
+                counter--;
+            }
+
         }
         cout<<ans<<endl;
+
     }
+
+
+    return 0;
 }
