@@ -1,0 +1,37 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+vector<int>o,e,d,nd;
+int n,p,q,m;
+bool cmp(int x, int y)
+{
+    if(x%m>y%m)
+        return false;
+    else if(x%m<y%m)
+        return true;
+    if(x%2 && y%2)
+        return x>y;
+    else if(x%2==0 && y%2==0)
+        return x<y;
+    return x%2;
+}
+int main()
+{
+    while(cin>>n>>m)
+    {
+        d.clear();
+        if(!n && !m)
+            break;
+        for(int i=1; i<=n; i++)
+        {
+            cin>>q;
+            d.push_back(q);
+        }
+        cout<<n<<" "<<m<<endl;
+        sort(d.begin(),d.end(),cmp);
+        for(int i=0; i<d.size(); i++)
+            cout<<d[i]<<endl;
+    }
+    cout<<n<<" "<<m<<endl;
+}

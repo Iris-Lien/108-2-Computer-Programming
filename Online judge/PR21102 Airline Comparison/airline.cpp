@@ -1,65 +1,72 @@
-#include<iostream>
+#include <iostream>
 
 using namespace std;
 
-int main()
+const int MAX_NUM_CITIES = 27;
+
+bool connectedAirline1[MAX_NUM_CITIES][MAX_NUM_CITIES];
+bool connectedAirline2[MAX_NUM_CITIES][MAX_NUM_CITIES];
+
+void ReadIn(bool connectedAirline[MAX_NUM_CITIES][MAX_NUM_CITIES])
 {
-    int cases,first;
-    char a[1];
-    while(cin>>cases)
+    int N;
+    cin >> N;
+
+    while (N--)
     {
-        while(cases--)
+        char from, to;
+        cin >> from >> to;
+
+        connectedAirline[from - 'A'][to - 'A'] = true;  //將有到達的城市標示true
+        connectedAirline[to - 'A'][from - 'A'] = true;
+    }
+}
+
+void RunFloydWarshallOnBoth()
+{
+    for (int k = 0; k < MAX_NUM_CITIES; ++k)
+    {
+        for (int i = 0; i < MAX_NUM_CITIES; ++i)
         {
-            cin.getline(a,1);
-            char destination[2];
-            for(int k=0; k<2; k++)
+            for (int j = 0; j < MAX_NUM_CITIES; ++j)
             {
-                cin>>first;
-                char flight[3][first];
-                char temp[first];
-
-                for(int i=0; i<first; i++)
-                    for(int j=0; j<2; j++)
-                        cin>>flight[i][j];
-
-                /*for(int i=0; i<first; i++)
-                    for(int j=0; j<2; j++)
-                        cout<<flight[i][j];
-                */
-
-                char start = flight[0][0];
-                char endd = flight[0][1];
-                int i=1;
-
-                while(true)
-                {
-                    if(i==first-1 && flight[first-1][0]!= endd)
-                    {
-                        destination[k] = endd;
-                        //cout<<k<<" "<<destination[k]<<endl;
-                        break;
-                    }
-                    else
-                    {
-                        if(flight[i][0]==endd)
-                        {
-                            endd=flight[i][1];
-                            i=1;
-                            //cout<<"end "<<endd<<endl;
-                        }
-                        else
-                            i++;
-                    }
-                }
-
+                connectedAirline1[i][j] |= (connectedAirline1[i][k] && connectedAirline1[k][j]);
+                connectedAirline2[i][j] |= (connectedAirline2[i][k] && connectedAirline2[k][j]);
             }
-            if(destination[0] == destination[1])
-                cout<<"YES"<<endl;
-            else
-                cout<<"NO"<<endl;
         }
     }
 
+}
 
-    return 0;
+int main()
+{
+    int T;
+
+    cin >> T;
+
+    for (int t = 0; t < T; ++t)
+    {
+
+        for (int i = 0; i < MAX_NUM_CITIES; ++i)    //將陣列初始化為false
+        {
+            for (int j = 0; j < MAX_NUM_CITIES; ++j)
+            {
+                connectedAirline1[i][j] = connectedAirline2[i][j] = false;
+            }
+        }
+
+        ReadIn(connectedAirline1);
+        ReadIn(connectedAirline2);
+
+        RunFloydWarshallOnBoth();
+
+        bool equivalent = true;
+
+        for (int i = 0; i < MAX_NUM_CITIES; ++i)    //檢查兩家航空公司可到達和不可到達城市是否皆為相同
+            for (int j = 0; j < MAX_NUM_CITIES; ++j)
+                equivalent &= (connectedAirline1[i][j] == connectedAirline2[i][j]);
+
+        cout << (equivalent ? "YES" : "NO") << endl;    //如果相同的話輸出YES，反之為NO
+        cout << endl;
+    }
 }

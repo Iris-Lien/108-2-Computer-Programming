@@ -1,77 +1,58 @@
-#include<iostream>
+#include <bits/stdc++.h>
+
 using namespace std;
 
-inline int funtion(char* arr,int x)
-{
-    int ans[x];
-    for(int i=0; i<x; i++)
-        ans[i]=0;
-    for(int c=0; c<x; c++)
-    {
-        for(int j=0; j<5; j++)
-        {
-            for(int i=0; i<x; i++)
-            {
-                if(c==i)
-                    continue;
-                if(arr[c*19+2+4*j]==arr[i*19+2+4*j])
-                    ans[c]++;
-            }
-        }
-    }
-    int p=0;
-    for(int i=0,t=0; i<x; i++)
-    {
-        if(ans[i]>t)
-        {
-            t=ans[i];
-            p=i;
-        }
-    }
-    return p+1;
-}
+const int N = 5;    //5個垃圾桶
+
 int main()
 {
-    char arr[100][19]= {{'\0'},{'\0'}};
-    int x=0;
-    char cpare[5]= {'r','o','y','g','b'};
-    while(cin>>arr[x])
+    map<char, int> m;
+    m['r'] = 0, m['o'] = 1, m['y'] = 2, m['g'] = 3, m['b'] = 4;
+    string s;
+    vector<string> v[N];
+    while(cin >> s)
     {
-        char temp[3]= {'\0'};
-        int t=0;
-        if(arr[x][0]=='#')
+        if(s[0] == '#')
+        {
             break;
-        if(arr[x][0]=='e')
-        {
-            cout<<funtion(&arr[0][0],x)<<'\n';
-            for(int i=0; i<=x; i++)
-            {
-                for(int j=0; j<19; j++)
-                    arr[i][j]='\0';
-            }
-            x=0;
-            continue;
         }
-        for(int i=0; i<5; i++)
+        else if(s[0] == 'e')
         {
-            if(cpare[i]!=arr[x][4*i])
+            int end = v[0].size(), ans, maxc = 0;
+            for(int i = 0; i < end; i++)
             {
-                for(int j=0; j<3; j++)
-                    temp[j]=arr[x][4*i+j];
-                for(int j=0; j<5; j++)
+                int cnt = 0;
+                for(int j = 0; j < end; j++)
                 {
-                    if(cpare[i]==arr[x][4*j])
+                    for(int k = 0; k < N; k++)
                     {
-                        arr[x][4*i]=arr[x][4*j];
-                        arr[x][4*i+2]=arr[x][4*j+2];
-                        arr[x][4*j]=temp[0];
-                        arr[x][4*j+2]=temp[2];
-                        break;
+                        if(v[k][i] == v[k][j])
+                        {
+                            cnt++;
+                        }
                     }
+
+                }
+                if(cnt > maxc)
+                {
+                    maxc = cnt;
+                    ans = i + 1;    //因為陣列從0開始，加1才會為正確行數
                 }
             }
+            cout<<ans<<endl;
+            for(int i = 0; i < N; i++)
+            {
+                v[i].clear();
+            }
         }
-        x++;
+        else
+        {
+            for(int i = 0; i < 19; i += 4)
+            {
+                v[m[s[i]]].push_back(s.substr(i, 3));   //將呼叫字串s索引i起的3個字元pupsh.back至v
+            }
+        }
     }
 
+    return 0;
 }

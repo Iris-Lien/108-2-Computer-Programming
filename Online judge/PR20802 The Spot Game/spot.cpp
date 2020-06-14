@@ -1,126 +1,91 @@
+#include<stdio.h>
+#include<stdlib.h>
 #include<iostream>
-
+#include<algorithm>
+#include<map>
+#include<string.h>
 using namespace std;
-
-int main(void)
+int board[55][55];
+void Rotate(string &str,int n)  //做陣列順時針旋轉90度
 {
-    int N;
-    while(cin>>N)
+    int tmp[55][55];
+    for(int i=0; i<n; i++)
     {
-        if(N==0)
-            break;
-        char arr[2*N][N][N];
-        for(int x=0; x<2*N; x++)
+        for(int j=0; j<n; j++)
         {
-            for(int i=0; i<N; i++)
-            {
-                for(int j=0; j<N; j++)
-                {
-                    arr[x][i][j]='0';
-                }
-            }
-        }
-
-        int move=0, t=0, count[2*N]= {0},determine=0;
-        for(int i=0 ; i<2*N ; i++)
-        {
-            int row,column;
-            char oper;
-            cin>>row>>column>>oper;
-            if(oper=='+')
-            {
-                for(int c=i; c<2*N; c++)
-                    arr[c][N-row][column-1]='x';
-                t++;
-                count[i]=t;
-            }
-            if(oper=='-')
-            {
-                for(int c=i; c<2*N; c++)
-                    arr[c][N-row][column-1]='0';
-                t--;
-                count[i]=t;
-            }
-            int equal=0;
-            for(int j=0; j<i && determine==0; j++)
-            {
-                equal=0;
-                for(int x=0; x<N; x++)
-                {
-                    for(int y=0; y<N; y++)
-                    {
-                        if(arr[i][x][y]!=arr[j][x][y])
-                            equal++;
-                    }
-                }
-                if(equal==0)
-                {
-                    move=i;
-                    determine=1;
-                    break;
-                }
-            }
-            for(int j=0; j<i && determine==0; j++)
-            {
-                equal=0;
-                for(int x=0; x<N; x++)
-                {
-                    for(int y=0; y<N; y++)
-                    {
-                        if(arr[i][x][y]!=arr[j][N-1-y][x])
-                            equal++;
-                    }
-                }
-                if(equal==0)
-                {
-                    move=i;
-                    determine=1;
-                    break;
-                }
-            }
-            for(int j=0; j<i && determine==0; j++)
-            {
-                equal=0;
-                for(int x=0; x<N; x++)
-                {
-                    for(int y=0; y<N; y++)
-                    {
-                        if(arr[i][x][y]!=arr[j][N-1-x][N-1-y])
-                            equal++;
-                    }
-                }
-                if(equal==0)
-                {
-                    move=i;
-                    determine=1;
-                    break;
-                }
-            }
-            for(int j=0; j<i && determine==0; j++)
-            {
-                equal=0;
-                for(int x=0; x<N; x++)
-                {
-                    for(int y=0; y<N; y++)
-                    {
-                        if(arr[i][x][y]!=arr[j][y][N-1-x])
-                            equal++;
-                    }
-                }
-                if(equal==0)
-                {
-                    move=i;
-                    determine=1;
-                    break;
-                }
-            }
-        }
-        if(move==0)
-            cout<<"Draw\n";
-        else
-        {
-            int x=(move%2==0)?2:1;
-            cout<<"Player "<<x<<" wins on move "<<move+1<<endl;
+            tmp[j][n-i-1]=board[i][j];
         }
     }
+    string tmpstr;
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<n; j++)
+        {
+            board[i][j]=tmp[i][j];
+            tmpstr+=tmp[i][j]+'0';
+        }
+    }
+    str=tmpstr;
+}
+int main()
+{
+    int n;
+    while(cin>>n && n!=0)
+    {
+        memset(board,0,sizeof(board));
+        map<string,int> save;
+        int player=2,ansp,move;
+        bool flag=false;
+        for(int i=0; i<2*n; i++)
+        {
+            int a,b;
+            char ch;
+            cin>>a>>b>>ch;
+            if(flag==true)
+                continue;
+            if(ch=='+') //放石頭標記1
+            {
+                board[a-1][b-1]=1;
+            }
+            else if(ch=='-')    //拿石頭標記0
+            {
+                board[a-1][b-1]=0;
+            }
+
+            string str;
+            for(int j=0; j<n; j++)
+            {
+                for(int k=0; k<n; k++)
+                {
+                    str+=board[j][k]+'0';
+                }
+            }
+            for(int j=0; j<4; j++)
+            {
+                if(save[str]<i+1 && save[str]!=0)
+                {
+                    move=i;
+                    ansp=player;
+                    flag=true;
+                    break;
+                }
+                else
+                    save[str]=i+1;
+                Rotate(str,n);
+            }
+            if(flag==true)
+                continue;
+
+            if(player==2)
+                player=1;
+            else
+                player=2;
+        }
+        if(flag==true)
+            cout<<"Player "<<player<<" wins on move "<<move+1<<endl;
+        else
+            cout<<"Draw"<<endl;
+    }
+    return 0;
+
 }
