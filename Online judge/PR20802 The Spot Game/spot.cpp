@@ -21,8 +21,8 @@ void Rotate(string &str,int n)  //做陣列順時針旋轉90度
     {
         for(int j=0; j<n; j++)
         {
-            board[i][j]=tmp[i][j];
-            tmpstr+=tmp[i][j]+'0';
+            board[i][j]=tmp[i][j];  //把旋轉後的陣列蓋掉原本的
+            tmpstr+=tmp[i][j]+'0';  //tmpstr是將陣列轉成字串存,方便尋找有沒有相同的棋局出現
         }
     }
     str=tmpstr;
@@ -32,8 +32,8 @@ int main()
     int n;
     while(cin>>n && n!=0)
     {
-        memset(board,0,sizeof(board));
-        map<string,int> save;
+        memset(board,0,sizeof(board));	//將board初始化為0
+        map<string,int> save;	//紀錄棋局
         int player=2,ansp,move;
         bool flag=false;
         for(int i=0; i<2*n; i++)
@@ -62,16 +62,15 @@ int main()
             }
             for(int j=0; j<4; j++)
             {
-                if(save[str]<i+1 && save[str]!=0)
+                if(save[str]<i+1 && save[str]!=0)   //如果找到重複的棋局
                 {
-                    move=i;
-                    ansp=player;
-                    flag=true;
+                    move=i; //移動幾步
+                    flag=true;  //找到重複的棋局,break
                     break;
                 }
                 else
-                    save[str]=i+1;
-                Rotate(str,n);
+                    save[str]=i+1;  //如果沒有找到重複的棋局就讓步數+1
+                Rotate(str,n);	//做旋轉後再繼續尋找有沒有出現相同的棋局
             }
             if(flag==true)
                 continue;

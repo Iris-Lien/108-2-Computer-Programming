@@ -1,147 +1,62 @@
-#include <stdio.h>
-#include <iostream>
-#include <map>
-#include <vector>
-#include <queue>
+#include <bits/stdc++.h>
+
 using namespace std;
-struct E
+
+const int N = 3100;
+int genes[N];
+
+map<string, int> gene_map1 = {{"non-existent", -1}, {"recessive", 0}, {"dominant", 1}};
+map<int, string> gene_map2 ={{-1, "non-existent"}, {0, "recessive"}, {1, "dominant"}};
+
+map<string, int> m; //存人名和基因
+vector<int> par[N];
+
+int seq = 0;
+int get(string& s)
 {
-    int gene=-1;    //將gene初始話為-1
-    string child;
-};
-map<string, E> R;
-map<string, vector<string> > g;
-int dfs(string name)
-{
-    if(g[name].size() == 0) //如果輸入字串長為0就回傳
-        return R[name].gene;
-    //cout << name << "---------"<< endl;
-    E &val = R[name];
-    if(val.gene < 0)    //如果沒有被定義基因
-    {
-        int g1 = dfs(g[name][0]);
-        int g2 = dfs(g[name][1]);
-        if(g1 >= 0 && g2 >= 0)
-        {
-            if((g1 > 0 && g2 > 0) || (g1 == 1 || g2 == 1))
-            {
-                if(g1 == 1 && g2 == 1)  //如果g1和g2皆為顯性
-                    val.gene = 1;
-                else if(g1 == 1 && g2 == 2)     //如果g1為顯性且g2為隱性
-                    val.gene = 1;
-                else if(g1 == 2 && g2 == 1)     //如果g1為隱性且g2為顯性
-                    val.gene = 1;
-                else
-                    val.gene = 2;
-            }
-            else
-            {
-                val.gene = 0;
-            }
-        }
-    }
+    if(m.find(s) != m.end())
+        return m[s];
     else
-    {
-        int g1 = dfs(g[name][0]);
-        int g2 = dfs(g[name][0]);
-        if(val.gene == 0)
-        {
-            if(g1 < 0 && g2 == 2)
-            {
-                R[g[name][0]].gene = 0;
-                dfs(g[name][0]);
-            }
-            if(g2 < 0 && g1 == 2)
-            {
-                R[g[name][1]].gene = 0;
-                dfs(g[name][1]);
-            }
-        }
-        if(val.gene == 1)
-        {
-            if(g1 < 0 && g2 == 2)
-            {
-                R[g[name][0]].gene = 1;
-                dfs(g[name][0]);
-            }
-            if(g2 < 0 && g1 == 2)
-            {
-                R[g[name][1]].gene = 1;
-                dfs(g[name][1]);
-            }
-        }
-        if(val.gene == 2)
-        {
-            if(g1 < 0 && g2 == 1)
-            {
-                R[g[name][0]].gene = 0;
-                dfs(g[name][0]);
-            }
-            if(g1 < 0 && g2 == 2)
-            {
-                R[g[name][0]].gene = 2;
-                dfs(g[name][0]);
-            }
-            if(g2 < 0 && g1 == 1)
-            {
-                R[g[name][1]].gene = 0;
-                dfs(g[name][1]);
-            }
-            if(g2 < 0 && g1 == 2)
-            {
-                R[g[name][1]].gene = 2;
-                dfs(g[name][1]);
-            }
-        }
-    }
-    return val.gene;
+        return m[s] = seq++;    //沒有找到就加入新的map
 }
+
+int cal(int a, int b)
+{
+    if(a + b == 0)	//a&b基因表示皆為隱性(0)、a&b基因表示為一陽(1)一不存在(-1)->回傳隱性(0)
+        return 0;
+    else if(a + b > 0)	//a&b基因其中一個為陽性(1)->回傳陽性(1)
+        return 1;
+    else	//否則回傳不存在(-1)
+        return -1;
+}
+
+int dp(int k)
+{
+    if(genes[k] < 2)    //如果基因已被定義
+        return genes[k];
+    else    //否則尋找父母的基因，推斷基因是顯性隱性
+        return genes[k] = cal(dp(par[k][0]), dp(par[k][1]));
+}
+
 int main()
 {
     int n;
-    while(cin>>n)
+    string a, b;
+
+    memset(genes, 3, sizeof(genes));
+
+    cin >> n;
+    while(n--)
     {
-        string s1, s2;
-        R.clear();  //清空R中的資料
-        g.clear();  //清空g中的資料
-        E foo;
-        while(n--)
-        {
-            cin >> s1 >> s2;
-            if(s2 == "dominant")    //如果基因為顯性就標示1
-                R[s1].gene = 1;
-            else if(s2 == "recessive")  //如果基因為隱性就標示2
-                R[s1].gene = 2;
-            else if(s2 == "non-existent")   //如果基因不存在就標示0
-                R[s1].gene = 0;
-            else
-            {
-                R[s1].child = s2;   //以上條件都不合就讓s2為child
-                g[s2].push_back(s1);    //新增元素至vector_g的尾端
-                if(R.find(s2) == R.end())
-                    R[s2] = foo;
-            }
-        }
-        for(map<string, E>::iterator it = R.begin(); it != R.end(); it++)
-        {
-            //cout << it->first <<" "<< it->second.child << "eee" << endl;
-            if((it->second).child == "")
-                dfs(it->first);
-        }
-        for(map<string, E>::iterator it = R.begin(); it != R.end(); it++)
-        {
-            cout << it->first << " ";
-            int val = it->second.gene;
-            if(val == 0)
-                puts("non-existent");
-            else if(val == 1)
-                puts("dominant");
-            else if(val == 2)
-                puts("recessive");
-            else
-                while(1);
-            //cout << it->first << " " << it->second.gene << endl;
-        }
+        cin >> a >> b;
+        if(gene_map1.find(b) != gene_map1.end())
+            genes[get(a)] = gene_map1[b];
+        else
+            par[get(b)].push_back(get(a));  //把父母的基因存給小孩
     }
+
+    for(auto &a : m)
+        cout << a.first << " " << gene_map2[dp(a.second)] << endl;
+
     return 0;
 }
